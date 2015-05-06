@@ -24,9 +24,9 @@ module Bigcommerce
         get path.build, params
       end
 
-      def find(resource_id)
+      def find(resource_id, params={})
         fail ArgumentError if resource_id.nil?
-        get path.build(resource_id)
+        get path.build(resource_id), params
       end
 
       def create(params)
@@ -38,13 +38,13 @@ module Bigcommerce
         put path.build(resource_id), params
       end
 
-      def destroy(resource_id)
+      def destroy(resource_id, params={})
         fail ArgumentError if resource_id.nil?
-        delete path.build(resource_id)
+        delete path.build(resource_id), params
       end
 
-      def destroy_all
-        delete path.build
+      def destroy_all(params={})
+        delete path.build, params
       end
     end
   end

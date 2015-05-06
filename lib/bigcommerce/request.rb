@@ -43,46 +43,31 @@ module Bigcommerce
     end
 
     module ClassMethods
-      def get(path, params = nil)
-        response = raw_request(:get, path, params)
-        build_response_object response
+      def get(path, params = {})
+        objectify(client(params)) { |cli| cli.get(path, params) }
       end
 
-      def delete(path)
-        response = raw_request(:delete, path)
-        response.body
+      def delete(path, params={})
+        client(params).tap { |cli| cli.delete(path, params) }
       end
 
       def post(path, params)
-        response = raw_request(:post, path, params)
-        build_response_object response
+        objectify(client(params)) { |cli| cli.post(path, params) }
       end
 
       def put(path, params)
-        response = raw_request(:put, path, params)
-        build_response_object response
-      end
-
-      def raw_request(method, path, params = nil)
-        response = Bigcommerce.api.send(method, path.to_s, params)
-        Bigcommerce.api_limit = response.headers['X-BC-ApiLimit-Remaining']
-        response
+        objectify(client(params)) { |cli| cli.put(path, params) }
       end
 
       private
 
-      def build_response_object(response)
-        json = parse response.body
-        if json.is_a? Array
-          json.map { |obj| new obj }
-        else
-          new json
-        end
+      def objectify(cli)
+        json = Bigcommerce.jsonify yield(cli)
+        json.is_a?(Array) ?  json.lazy.map { |obj| new(obj, cli) } : new(json, cli)
       end
 
-      def parse(json)
-        return [] if json.empty?
-        JSON.parse(json, symbolize_names: true)
+      def client(params)
+        params.delete(:client) || Bigcommerce.client(params.delete(:store_hash))
       end
     end
   end
