@@ -6,9 +6,9 @@ module Bigcommerce
   class Product < Resource
     include Bigcommerce::ResourceActions.new uri: 'products/%d'
 
-    property :id
+    read_only :id
     property :count
-    property :keyword_filter
+    read_only :keyword_filter
     property :name
     property :type
     property :sku
@@ -19,7 +19,7 @@ module Bigcommerce
     property :cost_price
     property :retail_price
     property :sale_price
-    property :calculated_price
+    read_only :calculated_price
     property :sort_order
     property :is_visible
     property :is_featured
@@ -34,10 +34,10 @@ module Bigcommerce
     property :fixed_cost_shipping_price
     property :is_free_shipping
     property :inventory_tracking
-    property :rating_total
-    property :rating_count
+    read_only :rating_total
+    read_only :rating_count
     property :total_sold
-    property :date_created
+    read_only :date_created
     property :brand_id
     property :view_count
     property :page_title
@@ -75,20 +75,20 @@ module Bigcommerce
     property :bin_picking_number
     property :custom_url
     property :availability
-    property :brand
-    property :downloads
-    property :images
-    property :discount_rules
-    property :configurable_fields
-    property :custom_fields
-    property :videos
-    property :skus
-    property :rules
-    property :option_set
-    property :options
-    property :tax_class
-    property :avalara_product_tax_code
-    property :primary_image
+    read_only :brand
+    read_only :downloads
+    read_only :images
+    read_only :discount_rules
+    read_only :configurable_fields
+    read_only :custom_fields
+    read_only :videos
+    read_only :skus
+    read_only :rules
+    read_only :option_set
+    read_only :options
+    read_only :tax_class
+    read_only :avalara_product_tax_code
+    read_only :primary_image
 
     def self.count(params = {})
       get 'products/count', params
