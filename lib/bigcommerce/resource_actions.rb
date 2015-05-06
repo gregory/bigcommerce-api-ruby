@@ -13,13 +13,39 @@ module Bigcommerce
 
     def included(base)
       base.send(:include, Request.new(options[:uri]))
+      base.send(:include, InstanceMethods)
       base.extend(ClassMethods)
       options[:disable_methods] ||= []
       methods = ClassMethods.public_instance_methods & options[:disable_methods]
       methods.each { |name| base.send(:remove_method, name) }
     end
 
+    module InstanceMethods
+      def save
+        params = strip_read_only_fields(self.to_hash).merge(client: client)
+        self.class.update(id, params)
+      end
+
+      def destroy
+        self.class.destroy(id, client: client)
+      end
+
+      def strip_read_only_fields(params)
+        self.class.read_only_fields.each { |field| params.delete(field) }
+        params
+      end
+    end
+
     module ClassMethods
+      def read_only(field)
+        read_only_fields << field
+        property field
+      end
+
+      def read_only_fields
+        @read_only_fields ||=[]
+      end
+
       def all(params = {})
         get path.build, params
       end
